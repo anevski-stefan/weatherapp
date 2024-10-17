@@ -154,12 +154,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8 flex">
-      <SavedCitiesList
-        locations={locations}
-        onSelectCity={handleSelectCity}
-        onRemoveLocation={handleRemoveLocation}
-        selectedIndex={selectedLocationIndex}
-      />
+      <div className="mr-4 flex-shrink-0">
+        <SavedCitiesList
+          locations={locations}
+          onSelectCity={handleSelectCity}
+          onRemoveLocation={handleRemoveLocation}
+          selectedIndex={selectedLocationIndex}
+        />
+      </div>
       <div className="flex-grow max-w-4xl mx-auto">
         <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-center">
           Weather Forecast
