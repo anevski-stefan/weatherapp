@@ -23,6 +23,10 @@ export interface WeatherData {
     sunset: number;
   };
   dt: number; 
+  coord: {
+    lat: number;
+    lon: number;
+  };
 }
   
   export interface ForecastData {

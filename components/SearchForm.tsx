@@ -1,23 +1,55 @@
+import React, { useState, useEffect, useRef } from "react";
 import { FaSearch } from "react-icons/fa";
 
 interface SearchFormProps {
   city: string;
   setCity: (city: string) => void;
   onSubmit: () => void;
+  fetchSuggestions: (query: string) => Promise<string[]>;
 }
 
 export const SearchForm: React.FC<SearchFormProps> = ({
   city,
   setCity,
   onSubmit,
+  fetchSuggestions,
 }) => {
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const justSelectedRef = useRef(false);
+
+  useEffect(() => {
+    const getSuggestions = async () => {
+      if (city.length > 2 && !justSelectedRef.current) {
+        const data = await fetchSuggestions(city);
+        setSuggestions(data);
+      } else {
+        setSuggestions([]);
+      }
+    };
+
+    getSuggestions();
+    justSelectedRef.current = false;
+  }, [city, fetchSuggestions]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit();
+    setSuggestions([]);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setCity(suggestion);
+    setSuggestions([]);
+    try {
+      onSubmit();
+    } catch (error) {
+      console.error("Error in onSubmit:", error);
+    }
+    justSelectedRef.current = true;
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-8">
+    <form onSubmit={handleSubmit} className="mb-8 relative">
       <div className="relative">
         <input
           type="text"
@@ -33,6 +65,19 @@ export const SearchForm: React.FC<SearchFormProps> = ({
           <FaSearch />
         </button>
       </div>
+      {suggestions.length > 0 && (
+        <ul className="absolute z-10 w-full bg-gray-800 rounded-lg mt-1 shadow-lg">
+          {suggestions.map((suggestion, index) => (
+            <li
+              key={index}
+              className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+              onClick={() => handleSuggestionClick(suggestion)}
+            >
+              {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
     </form>
   );
 };

@@ -4,10 +4,11 @@ import { WeatherData, ForecastData, AlertData } from '../types/weather';
 const API_KEY = process.env.API_KEY;
 
 export const fetchWeatherData = async (query: string): Promise<WeatherData> => {
-  const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?${query}&units=metric&appid=${API_KEY}`);
+  const url = `https://api.openweathermap.org/data/2.5/weather?${query}&units=metric&appid=${API_KEY}`;
+  console.log('Fetching weather data from:', url);
+  const response = await axios.get(url);
   return response.data;
 };
-
 export const fetchAirQuality = async (lat: number, lon: number): Promise<number> => {
   const response = await axios.get(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
   return response.data.list[0].main.aqi;
@@ -79,3 +80,8 @@ function createAlert(event: string, description: string, timestamp: number): Ale
     tags: [event.split(' ')[0]],
   };
 }
+
+export const fetchCitySuggestions = async (query: string): Promise<string[]> => {
+  const response = await axios.get(`/api/city-suggestions?query=${query}`);
+  return response.data;
+};
