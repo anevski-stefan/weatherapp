@@ -7,7 +7,7 @@ interface WeatherAlertsProps {
 
 export const WeatherAlerts: React.FC<WeatherAlertsProps> = ({ alerts }) => {
   if (!alerts || alerts.length === 0) {
-    return null; // or return a "No alerts" message if you prefer
+    return null;
   }
 
   return (
@@ -21,8 +21,7 @@ export const WeatherAlerts: React.FC<WeatherAlertsProps> = ({ alerts }) => {
           <p className="font-bold">{alert.event}</p>
           <p>{alert.description}</p>
           <p className="text-sm">
-            From: {new Date(alert.start * 1000).toLocaleString()} to{" "}
-            {new Date(alert.end * 1000).toLocaleString()}
+            From: {new Date(alert.start * 1000).toLocaleString()}
           </p>
         </div>
       ))}
