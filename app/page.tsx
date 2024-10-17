@@ -153,56 +153,67 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8 flex">
-      <div className="mr-4 flex-shrink-0">
-        <SavedCitiesList
-          locations={locations}
-          onSelectCity={handleSelectCity}
-          onRemoveLocation={handleRemoveLocation}
-          selectedIndex={selectedLocationIndex}
-        />
-      </div>
-      <div className="flex-grow max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8 relative">
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-center">
           Weather Forecast
         </h1>
-        <SearchForm
-          city={searchCity}
-          setCity={setSearchCity}
-          onSubmit={handleSearch}
-          fetchSuggestions={fetchCitySuggestions}
-        />
-        <AnimatePresence mode="wait">
-          {loading && (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center mt-8"
-            >
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-            </motion.div>
-          )}
-          {error && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-red-500 text-center mt-8"
-            >
-              {error}
-            </motion.div>
-          )}
-          {selectedLocationIndex !== null &&
-            locations[selectedLocationIndex] && (
-              <MultiLocationDisplay
-                key={locations[selectedLocationIndex].name}
-                location={locations[selectedLocationIndex]}
-              />
-            )}
-        </AnimatePresence>
+        <div className="flex gap-4">
+          <div className="w-64 flex-shrink-0">
+            {/* This div is empty to align with the search bar */}
+          </div>
+          <div className="flex-grow">
+            <SearchForm
+              city={searchCity}
+              setCity={setSearchCity}
+              onSubmit={handleSearch}
+              fetchSuggestions={fetchCitySuggestions}
+            />
+          </div>
+        </div>
+        <div className="flex gap-4">
+          <div className="w-64 flex-shrink-0">
+            <SavedCitiesList
+              locations={locations}
+              onSelectCity={handleSelectCity}
+              onRemoveLocation={handleRemoveLocation}
+              selectedIndex={selectedLocationIndex}
+            />
+          </div>
+          <div className="flex-grow">
+            <AnimatePresence mode="wait">
+              {loading && (
+                <motion.div
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-center mt-8"
+                >
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+                </motion.div>
+              )}
+              {error && (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-red-500 text-center mt-8"
+                >
+                  {error}
+                </motion.div>
+              )}
+              {selectedLocationIndex !== null &&
+                locations[selectedLocationIndex] && (
+                  <MultiLocationDisplay
+                    key={locations[selectedLocationIndex].name}
+                    location={locations[selectedLocationIndex]}
+                  />
+                )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </div>
   );

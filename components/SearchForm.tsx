@@ -62,7 +62,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
           type="submit"
           className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
         >
-          <FaSearch />
+          <FaSearch className="mr-2" />
         </button>
       </div>
       {suggestions.length > 0 && (
