@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Weather App
+
+This is a Next.js-based weather application that provides real-time weather information, forecasts, and alerts for various locations.
+
+## Features
+
+- Current weather display
+- 5-day forecast
+- 24-hour hourly forecast
+- Air quality index
+- UV index
+- Weather alerts
+- City search with autocomplete suggestions
+- Responsive design
+
+## Technologies Used
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Framer Motion for animations
+- OpenWeatherMap API for weather data
 
 ## Getting Started
 
-First, run the development server:
+First, clone the repository and install the dependencies:
+
+```bash
+git clone <repository-url>
+cd weather-app
+npm install
+```
+
+Then, create a `.env` file in the root directory and add your OpenWeatherMap API key:
+
+`API_KEY=your_openweathermap_api_key_here`
+
+To run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000] with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/app`: Contains the main application pages and layouts
+- `/components`: React components used throughout the application
+- `/lib`: Utility functions and API calls
+- `/types`: TypeScript type definitions
+- `/pages/api`: API routes for server-side operations
 
-## Learn More
+## API Integration
 
-To learn more about Next.js, take a look at the following resources:
+The application uses the OpenWeatherMap API to fetch weather data. API calls are managed in the `lib/api.ts` file.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Styling
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The project uses Tailwind CSS for styling, with custom configurations in `tailwind.config.ts`.
