@@ -16,6 +16,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({
 }) => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const justSelectedRef = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const getSuggestions = async () => {
@@ -48,6 +49,13 @@ export const SearchForm: React.FC<SearchFormProps> = ({
     justSelectedRef.current = true;
   };
 
+  const handleBlur = () => {
+    // Use setTimeout to allow click events on suggestions to fire before hiding them
+    setTimeout(() => {
+      setSuggestions([]);
+    }, 200);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="mb-8 relative">
       <div className="relative">
@@ -55,6 +63,8 @@ export const SearchForm: React.FC<SearchFormProps> = ({
           type="text"
           value={city}
           onChange={(e) => setCity(e.target.value)}
+          onBlur={handleBlur}
+          ref={inputRef}
           placeholder="Enter city name"
           className="w-full px-4 py-2 rounded-full bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
