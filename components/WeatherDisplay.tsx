@@ -13,6 +13,15 @@ export const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
   airQuality,
   uvIndex,
 }) => {
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+    });
+  };
+
   const getAirQualityLabel = (aqi: number) => {
     if (aqi <= 50) return "Good";
     if (aqi <= 100) return "Moderate";
@@ -32,12 +41,15 @@ export const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
 
   return (
     <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-3xl font-bold">{weatherData.name}</h2>
-          <p className="text-xl">{weatherData.weather[0].description}</p>
-        </div>
-        <div className="text-right">
+      <div className="flex flex-col items-center mb-6">
+        <h2 className="text-3xl font-bold">{weatherData.name}</h2>
+        <p className="text-xl mt-2">{weatherData.weather[0].description}</p>
+        {weatherData.dt && (
+          <p className="text-lg text-gray-400 mt-1">
+            {formatDate(weatherData.dt)}
+          </p>
+        )}
+        <div className="text-center mt-4">
           <p className="text-5xl font-bold">
             {Math.round(weatherData.main.temp)}°C
           </p>
@@ -50,9 +62,9 @@ export const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
         <WeatherInfoCard
           icon={<FaTemperatureHigh />}
           label="High / Low"
-          value={`${Math.round(weatherData.main.temp_max)}°C / ${Math.round(
+          value={`${Math.round(weatherData.main.temp_max)}° / ${Math.round(
             weatherData.main.temp_min
-          )}°C`}
+          )}°`}
         />
         <WeatherInfoCard
           icon={<FaWind />}
@@ -127,3 +139,5 @@ const WeatherInfoCard: React.FC<{
     <p className="text-sm sm:text-base font-semibold">{value}</p>
   </div>
 );
+
+export default WeatherDisplay;

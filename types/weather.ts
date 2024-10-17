@@ -1,31 +1,29 @@
 export interface WeatherData {
-    main: {
-      temp: number;
-      feels_like: number;
-      humidity: number;
-      pressure: number;
-      temp_max: number;
-      temp_min: number;
-    };
-    weather: {
-      id: number;
-      description: string;
-      icon: string;
-    }[];
-    name: string;
-    sys: {
-      sunrise: number;
-      sunset: number;
-    };
-    wind: {
-      speed: number;
-      deg: number;
-    };
-    coord: {
-      lat: number;
-      lon: number;
-    };
-  }
+  name: string;
+  main: {
+    temp: number;
+    feels_like: number;
+    humidity: number;
+    pressure: number;
+    temp_max: number;
+    temp_min: number;
+  };
+  weather: {
+    description: string;
+    icon: string;
+    id: number;
+    main: string;
+  }[];
+  wind: {
+    speed: number;
+    deg: number;
+  };
+  sys: {
+    sunrise: number;
+    sunset: number;
+  };
+  dt: number; 
+}
   
   export interface ForecastData {
     list: {
@@ -38,4 +36,46 @@ export interface WeatherData {
         description: string;
       }[];
     }[];
+  }
+
+  export interface AlertData {
+    sender_name: string;
+    event: string;
+    start: number;
+    description: string;
+    tags: string[];
+  }
+  export interface ForecastItem {
+    dt: number;
+    main: {
+      temp: number;
+      feels_like: number;
+      temp_min: number;
+      temp_max: number;
+      pressure: number;
+      sea_level: number;
+      grnd_level: number;
+      humidity: number;
+      temp_kf: number;
+    };
+    weather: {
+      id: number;
+      main: string;
+      description: string;
+      icon: string;
+    }[];
+    clouds: {
+      all: number;
+    };
+    wind: {
+      speed: number;
+      deg: number;
+      gust: number;
+    };
+    visibility: number;
+    pop: number;
+    sys: {
+      pod: string;
+    };
+    dt_txt: string;
   }

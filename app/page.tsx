@@ -12,6 +12,8 @@ import {
 } from "../lib/api";
 import { WeatherData, ForecastData } from "../types/weather";
 import { ForecastDisplay } from "../components/ForecastDisplay";
+import { WeatherAlerts } from "../components/WeatherAlerts";
+import { fetchWeatherAlerts } from "../lib/api";
 
 export default function Home() {
   const [city, setCity] = useState("");
@@ -19,6 +21,7 @@ export default function Home() {
   const [airQuality, setAirQuality] = useState<number | null>(null);
   const [forecast, setForecast] = useState<ForecastData | null>(null);
   const [uvIndex, setUVIndex] = useState<number | null>(null);
+  const [alerts, setAlerts] = useState<AlertData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -35,6 +38,8 @@ export default function Home() {
       setForecast(forecastData);
       const uvi = await fetchUVIndex(lat, lon);
       setUVIndex(uvi);
+      const alertsData = await fetchWeatherAlerts(lat, lon);
+      setAlerts(alertsData);
     } catch (err: any) {
       console.error("Error fetching weather data:", err);
       setError(
@@ -44,6 +49,7 @@ export default function Home() {
       setAirQuality(null);
       setForecast(null);
       setUVIndex(null);
+      setAlerts([]);
     }
     setLoading(false);
   };
@@ -109,6 +115,7 @@ export default function Home() {
                 airQuality={airQuality}
                 uvIndex={uvIndex}
               />
+              <WeatherAlerts alerts={alerts} />
               <ForecastDisplay forecast={forecast} />
             </motion.div>
           )}
