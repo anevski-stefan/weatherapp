@@ -3,10 +3,9 @@ import { WeatherData, ForecastData, AlertData } from '../types/weather';
 
 const API_KEY = process.env.API_KEY;
 
-export const fetchWeatherData = async (query: string): Promise<WeatherData> => {
-  const url = `https://api.openweathermap.org/data/2.5/weather?${query}&units=metric&appid=${API_KEY}`;
-  console.log('Fetching weather data from:', url);
-  const response = await axios.get(url);
+export const fetchWeatherData = async (city: string): Promise<WeatherData> => {
+  console.log(`Fetching weather data from: https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${API_KEY}`);
+  const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${API_KEY}`);
   return response.data;
 };
 export const fetchAirQuality = async (lat: number, lon: number): Promise<number> => {

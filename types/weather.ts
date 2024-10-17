@@ -22,11 +22,15 @@ export interface WeatherData {
     sunrise: number;
     sunset: number;
   };
-  dt: number; 
+  dt: number;
   coord: {
     lat: number;
     lon: number;
   };
+  airQuality: number | null;
+  forecast: ForecastData | null;
+  uvIndex: number | null;
+  alerts: AlertData[];
 }
   
   export interface ForecastData {

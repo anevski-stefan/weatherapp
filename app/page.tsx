@@ -1,31 +1,83 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { WeatherDisplay } from "../components/WeatherDisplay";
 import { SearchForm } from "../components/SearchForm";
+import { MultiLocationDisplay } from "../components/MultiLocationDisplay";
+import { SavedCitiesList } from "../components/SavedCities";
+import { WeatherData } from "../types/weather";
 import {
   fetchWeatherData,
   fetchAirQuality,
   fetchForecast,
   fetchUVIndex,
   fetchWeatherAlerts,
-  fetchCitySuggestions,
 } from "../lib/api";
-import { WeatherData, ForecastData, AlertData } from "../types/weather";
-import { ForecastDisplay } from "../components/ForecastDisplay";
-import { WeatherAlerts } from "../components/WeatherAlerts";
-import axios from "axios";
+import { fetchCitySuggestions } from "../lib/api";
+
+const STORAGE_KEY = "savedWeatherLocations";
 
 export default function Home() {
+  const [locations, setLocations] = useState<WeatherData[]>([]);
+  const [selectedLocationIndex, setSelectedLocationIndex] = useState<
+    number | null
+  >(null);
   const [searchCity, setSearchCity] = useState("");
-  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [airQuality, setAirQuality] = useState<number | null>(null);
-  const [forecast, setForecast] = useState<ForecastData | null>(null);
-  const [uvIndex, setUVIndex] = useState<number | null>(null);
-  const [alerts, setAlerts] = useState<AlertData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const savedLocations = localStorage.getItem(STORAGE_KEY);
+    if (savedLocations) {
+      const parsedLocations = JSON.parse(savedLocations);
+      setLocations(parsedLocations);
+      if (parsedLocations.length > 0) {
+        setSelectedLocationIndex(0);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isClient && locations.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(locations));
+    }
+  }, [locations, isClient]);
+
+  const handleFetchError = (error: any) => {
+    console.error("Error in handleFetchError:", error);
+
+    if (error.response) {
+      if (error.response.status === 404) {
+        setError("City not found. Please check the spelling and try again.");
+      } else if (error.response.status === 401) {
+        setError("API key is invalid. Please check your configuration.");
+      } else if (error.response.status === 400) {
+        setError(
+          "Invalid request. Please try again with a different city name."
+        );
+      } else if (error.response.status >= 500) {
+        setError("Server error. Please try again later.");
+      } else {
+        setError(
+          `An error occurred: ${
+            error.response.data.message || error.response.statusText
+          }`
+        );
+      }
+    } else if (error.request) {
+      setError(
+        "No response received from the weather service. Please check your internet connection and try again."
+      );
+    } else if (error.message && error.message.includes("Network Error")) {
+      setError(
+        "Network error. Please check your internet connection and try again."
+      );
+    } else {
+      setError(`An unexpected error occurred: ${error.message}`);
+    }
+  };
 
   const fetchWeather = async (query: string) => {
     setLoading(true);
@@ -35,26 +87,34 @@ export default function Home() {
     try {
       const weather = await fetchWeatherData(query);
       console.log("Weather data received:", weather);
-      setWeatherData(weather);
+
+      const cityExists = locations.findIndex(
+        (location) => location.name.toLowerCase() === weather.name.toLowerCase()
+      );
+      if (cityExists !== -1) {
+        setSelectedLocationIndex(cityExists);
+        setLoading(false);
+        return;
+      }
 
       const { lat, lon } = weather.coord;
-      console.log(`Coordinates: lat ${lat}, lon ${lon}`);
+      const [aqi, forecastData, uvi, alertsData] = await Promise.all([
+        fetchAirQuality(lat, lon),
+        fetchForecast(`lat=${lat}&lon=${lon}`),
+        fetchUVIndex(lat, lon),
+        fetchWeatherAlerts(lat, lon),
+      ]);
 
-      const aqi = await fetchAirQuality(lat, lon);
-      console.log("Air Quality Index:", aqi);
-      setAirQuality(aqi);
+      const newLocation = {
+        ...weather,
+        airQuality: aqi,
+        forecast: forecastData,
+        uvIndex: uvi,
+        alerts: alertsData,
+      };
 
-      const forecastData = await fetchForecast(`lat=${lat}&lon=${lon}`);
-      console.log("Forecast data received:", forecastData);
-      setForecast(forecastData);
-
-      const uvi = await fetchUVIndex(lat, lon);
-      console.log("UV Index:", uvi);
-      setUVIndex(uvi);
-
-      const alertsData = await fetchWeatherAlerts(lat, lon);
-      console.log("Weather alerts:", alertsData);
-      setAlerts(alertsData);
+      setLocations((prevLocations) => [...prevLocations, newLocation]);
+      setSelectedLocationIndex(locations.length);
     } catch (err: any) {
       console.error("Error in fetchWeather:", err);
       handleFetchError(err);
@@ -63,58 +123,44 @@ export default function Home() {
     }
   };
 
-  const handleFetchError = (err: any) => {
-    if (axios.isAxiosError(err)) {
-      if (err.response) {
-        console.error("Response data:", err.response.data);
-        console.error("Response status:", err.response.status);
-        console.error("Response headers:", err.response.headers);
-        setError(`Error: ${err.response.data.message || err.message}`);
-      } else if (err.request) {
-        console.error("No response received:", err.request);
-        setError("No response received from the server. Please try again.");
-      } else {
-        console.error("Error message:", err.message);
-        setError(`An error occurred: ${err.message}`);
-      }
-    } else {
-      console.error("Non-Axios error:", err);
-      setError("An unexpected error occurred. Please try again later.");
-    }
-    setWeatherData(null);
-    setAirQuality(null);
-    setForecast(null);
-    setUVIndex(null);
-    setAlerts([]);
-  };
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          console.log(`Got coordinates: lat ${latitude}, lon ${longitude}`);
-          fetchWeather(`lat=${latitude}&lon=${longitude}`);
-        },
-        (err) => {
-          console.error("Geolocation error:", err);
-          setError(`Geolocation error: ${err.message}`);
-        }
-      );
-    } else {
-      setError("Geolocation is not supported by this browser.");
-    }
-  }, []);
-
   const handleSearch = () => {
     if (searchCity.trim()) {
-      fetchWeather(`q=${encodeURIComponent(searchCity.trim())}`);
+      fetchWeather(searchCity);
+      setSearchCity("");
     }
   };
 
+  const handleRemoveLocation = (index: number) => {
+    setLocations((prevLocations) =>
+      prevLocations.filter((_, i) => i !== index)
+    );
+    if (selectedLocationIndex === index) {
+      setSelectedLocationIndex(locations.length > 1 ? 0 : null);
+    } else if (
+      selectedLocationIndex !== null &&
+      selectedLocationIndex > index
+    ) {
+      setSelectedLocationIndex(selectedLocationIndex - 1);
+    }
+  };
+
+  const handleSelectCity = (index: number) => {
+    setSelectedLocationIndex(index);
+  };
+
+  if (!isClient) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8 flex">
+      <SavedCitiesList
+        locations={locations}
+        onSelectCity={handleSelectCity}
+        onRemoveLocation={handleRemoveLocation}
+        selectedIndex={selectedLocationIndex}
+      />
+      <div className="flex-grow max-w-4xl mx-auto">
         <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-center">
           Weather Forecast
         </h1>
@@ -147,23 +193,13 @@ export default function Home() {
               {error}
             </motion.div>
           )}
-          {weatherData && (
-            <motion.div
-              key="weather"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-            >
-              <WeatherDisplay
-                weatherData={weatherData}
-                airQuality={airQuality}
-                uvIndex={uvIndex}
+          {selectedLocationIndex !== null &&
+            locations[selectedLocationIndex] && (
+              <MultiLocationDisplay
+                key={locations[selectedLocationIndex].name}
+                location={locations[selectedLocationIndex]}
               />
-              <WeatherAlerts alerts={alerts} />
-              <ForecastDisplay forecast={forecast} />
-            </motion.div>
-          )}
+            )}
         </AnimatePresence>
       </div>
     </div>
