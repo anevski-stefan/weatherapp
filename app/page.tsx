@@ -155,14 +155,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8 relative">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-center">
-          Weather Forecast
-        </h1>
         <div className="flex gap-4">
           <div className="w-64 flex-shrink-0">
             {/* This div is empty to align with the search bar */}
           </div>
           <div className="flex-grow">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-center">
+              Weather Forecast
+            </h1>
             <SearchForm
               city={searchCity}
               setCity={setSearchCity}
