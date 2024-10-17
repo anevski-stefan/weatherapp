@@ -21,3 +21,8 @@ export const fetchForecast = async (query: string): Promise<ForecastData> => {
   const response = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?${query}&units=metric&appid=${API_KEY}`);
   return response.data;
 };
+
+export const fetchUVIndex = async (lat: number, lon: number): Promise<number> => {
+  const response = await axios.get(`http://api.openweathermap.org/data/2.5/uvi?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
+  return response.data.value;
+};

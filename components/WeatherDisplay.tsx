@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { WeatherData } from "../types/weather";
 import { FaTemperatureHigh, FaWind, FaTint, FaCompass } from "react-icons/fa";
 import { WiSunrise, WiSunset } from "react-icons/wi";
@@ -6,11 +5,13 @@ import { WiSunrise, WiSunset } from "react-icons/wi";
 interface WeatherDisplayProps {
   weatherData: WeatherData;
   airQuality: number | null;
+  uvIndex: number | null;
 }
 
 export const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
   weatherData,
   airQuality,
+  uvIndex,
 }) => {
   const getAirQualityLabel = (aqi: number) => {
     if (aqi <= 50) return "Good";
@@ -19,6 +20,14 @@ export const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
     if (aqi <= 200) return "Unhealthy";
     if (aqi <= 300) return "Very Unhealthy";
     return "Hazardous";
+  };
+
+  const getUVIndexLabel = (uvi: number) => {
+    if (uvi <= 2) return "Low";
+    if (uvi <= 5) return "Moderate";
+    if (uvi <= 7) return "High";
+    if (uvi <= 10) return "Very High";
+    return "Extreme";
   };
 
   return (
@@ -86,6 +95,20 @@ export const WeatherDisplay: React.FC<WeatherDisplayProps> = ({
           </div>
           <p className="mt-2">
             {airQuality} - {getAirQualityLabel(airQuality)}
+          </p>
+        </div>
+      )}
+      {uvIndex !== null && (
+        <div className="mt-6">
+          <h3 className="text-xl font-semibold mb-2">UV Index</h3>
+          <div className="bg-gray-700 rounded-full h-4 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500"
+              style={{ width: `${(uvIndex / 11) * 100}%` }}
+            ></div>
+          </div>
+          <p className="mt-2">
+            {uvIndex.toFixed(1)} - {getUVIndexLabel(uvIndex)}
           </p>
         </div>
       )}

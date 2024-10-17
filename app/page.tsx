@@ -4,7 +4,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WeatherDisplay } from "../components/WeatherDisplay";
 import { SearchForm } from "../components/SearchForm";
-import { fetchWeatherData, fetchAirQuality, fetchForecast } from "../lib/api";
+import {
+  fetchWeatherData,
+  fetchAirQuality,
+  fetchForecast,
+  fetchUVIndex,
+} from "../lib/api";
 import { WeatherData, ForecastData } from "../types/weather";
 import { ForecastDisplay } from "../components/ForecastDisplay";
 
@@ -13,6 +18,7 @@ export default function Home() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [airQuality, setAirQuality] = useState<number | null>(null);
   const [forecast, setForecast] = useState<ForecastData | null>(null);
+  const [uvIndex, setUVIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -27,6 +33,8 @@ export default function Home() {
       setAirQuality(aqi);
       const forecastData = await fetchForecast(query);
       setForecast(forecastData);
+      const uvi = await fetchUVIndex(lat, lon);
+      setUVIndex(uvi);
     } catch (err: any) {
       console.error("Error fetching weather data:", err);
       setError(
@@ -35,6 +43,7 @@ export default function Home() {
       setWeatherData(null);
       setAirQuality(null);
       setForecast(null);
+      setUVIndex(null);
     }
     setLoading(false);
   };
@@ -98,6 +107,7 @@ export default function Home() {
               <WeatherDisplay
                 weatherData={weatherData}
                 airQuality={airQuality}
+                uvIndex={uvIndex}
               />
               <ForecastDisplay forecast={forecast} />
             </motion.div>
