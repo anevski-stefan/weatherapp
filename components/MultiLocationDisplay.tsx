@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { WeatherDisplay } from "./WeatherDisplay";
 import { ForecastDisplay } from "./ForecastDisplay";
 import { WeatherAlerts } from "./WeatherAlerts";
-import { WeatherData } from "../types/weather";
+import { HourlyForecast } from "./HourlyForecast";
+import { WeatherData, HourlyData } from "../types/weather";
 
 interface MultiLocationDisplayProps {
   location: WeatherData;
@@ -12,6 +13,20 @@ interface MultiLocationDisplayProps {
 export const MultiLocationDisplay: React.FC<MultiLocationDisplayProps> = ({
   location,
 }) => {
+  console.log("MultiLocationDisplay received location:", location);
+
+  // Extract hourly forecast data from forecast.list
+  const hourlyForecastData: HourlyData[] =
+    location.forecast?.list?.map((item) => ({
+      dt: item.dt,
+      temp: item.main.temp,
+      weather: item.weather,
+      pop: item.pop,
+      wind_speed: item.wind.speed,
+    })) || [];
+
+  console.log("Extracted hourly forecast data:", hourlyForecastData);
+
   return (
     <motion.div
       key={location.name}
@@ -23,11 +38,23 @@ export const MultiLocationDisplay: React.FC<MultiLocationDisplayProps> = ({
     >
       <WeatherDisplay
         weatherData={location}
-        airQuality={location.airQuality}
-        uvIndex={location.uvIndex}
+        airQuality={location.airQuality ?? null}
+        uvIndex={location.uvIndex ?? null}
       />
       <div className="mt-4">
-        <ForecastDisplay forecast={location.forecast} />
+        <ForecastDisplay forecast={location.forecast ?? null} />
+      </div>
+      <div className="w-full">
+        {location.forecast &&
+        location.forecast.list &&
+        location.forecast.list.length > 0 ? (
+          <HourlyForecast
+            hourlyData={location.forecast.list}
+            className="w-full"
+          />
+        ) : (
+          <div>Forecast data not available</div>
+        )}
       </div>
       <div className="mt-4">
         <WeatherAlerts alerts={location.alerts} />

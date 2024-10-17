@@ -12,8 +12,8 @@ import {
   fetchForecast,
   fetchUVIndex,
   fetchWeatherAlerts,
+  fetchCitySuggestions,
 } from "../lib/api";
-import { fetchCitySuggestions } from "../lib/api";
 
 const STORAGE_KEY = "savedWeatherLocations";
 
@@ -44,6 +44,15 @@ export default function Home() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(locations));
     }
   }, [locations, isClient]);
+
+  useEffect(() => {
+    if (selectedLocationIndex !== null && locations[selectedLocationIndex]) {
+      console.log(
+        "Selected location updated:",
+        locations[selectedLocationIndex]
+      );
+    }
+  }, [locations, selectedLocationIndex]);
 
   const handleFetchError = (error: any) => {
     console.error("Error in handleFetchError:", error);
@@ -88,16 +97,9 @@ export default function Home() {
       const weather = await fetchWeatherData(query);
       console.log("Weather data received:", weather);
 
-      const cityExists = locations.findIndex(
-        (location) => location.name.toLowerCase() === weather.name.toLowerCase()
-      );
-      if (cityExists !== -1) {
-        setSelectedLocationIndex(cityExists);
-        setLoading(false);
-        return;
-      }
-
       const { lat, lon } = weather.coord;
+      console.log("Fetching additional data for lat:", lat, "lon:", lon);
+
       const [aqi, forecastData, uvi, alertsData] = await Promise.all([
         fetchAirQuality(lat, lon),
         fetchForecast(`lat=${lat}&lon=${lon}`),
@@ -105,17 +107,35 @@ export default function Home() {
         fetchWeatherAlerts(lat, lon),
       ]);
 
+      // Extract hourly forecast from forecastData
+      const hourlyForecast = forecastData.list.map((item: any) => ({
+        dt: item.dt,
+        temp: item.main.temp,
+        weather: item.weather,
+        pop: item.pop,
+        wind_speed: item.wind.speed,
+      }));
+
+      console.log("Hourly forecast data:", hourlyForecast);
+
       const newLocation = {
         ...weather,
         airQuality: aqi,
         forecast: forecastData,
         uvIndex: uvi,
         alerts: alertsData,
+        hourlyForecast: hourlyForecast, // Add this line
       };
 
-      setLocations((prevLocations) => [...prevLocations, newLocation]);
+      console.log("New location with hourly forecast:", newLocation);
+
+      setLocations((prevLocations) => {
+        const updatedLocations = [...prevLocations, newLocation];
+        console.log("Updated locations:", updatedLocations);
+        return updatedLocations;
+      });
       setSelectedLocationIndex(locations.length);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error in fetchWeather:", err);
       handleFetchError(err);
     } finally {

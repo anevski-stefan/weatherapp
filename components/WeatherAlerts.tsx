@@ -1,35 +1,31 @@
 import React from "react";
-import { AlertData } from "../types/weather";
-import { motion } from "framer-motion";
+import { WeatherAlert } from "../types/weather";
 
 interface WeatherAlertsProps {
-  alerts: AlertData[];
+  alerts?: WeatherAlert[] | undefined;
 }
 
 export const WeatherAlerts: React.FC<WeatherAlertsProps> = ({ alerts }) => {
-  if (alerts.length === 0) return null;
+  if (!alerts || alerts.length === 0) {
+    return null; // or return a "No alerts" message if you prefer
+  }
 
   return (
-    <div className="mt-8">
-      <h3 className="text-2xl font-semibold mb-4">Weather Alerts</h3>
+    <div className="mt-4">
+      <h3 className="text-xl font-semibold mb-2">Weather Alerts</h3>
       {alerts.map((alert, index) => (
-        <motion.div
+        <div
           key={index}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className="bg-red-600 rounded-lg p-4 mb-4"
+          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-2"
         >
-          <h4 className="text-xl font-bold">{alert.event}</h4>
-          <p className="text-sm">Forecast period: {formatDate(alert.start)}</p>
-          <p className="mt-2">{alert.description}</p>
-        </motion.div>
+          <p className="font-bold">{alert.event}</p>
+          <p>{alert.description}</p>
+          <p className="text-sm">
+            From: {new Date(alert.start * 1000).toLocaleString()} to{" "}
+            {new Date(alert.end * 1000).toLocaleString()}
+          </p>
+        </div>
       ))}
     </div>
   );
 };
-
-function formatDate(timestamp: number): string {
-  const date = new Date(timestamp * 1000);
-  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-}

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { WeatherData, ForecastData, AlertData } from '../types/weather';
+import { WeatherData, ForecastData, AlertData, HourlyData} from '../types/weather';
 
 const API_KEY = process.env.API_KEY;
 
@@ -8,6 +8,33 @@ export const fetchWeatherData = async (city: string): Promise<WeatherData> => {
   const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${API_KEY}`);
   return response.data;
 };
+
+export const fetchHourlyForecast = async (lat: number, lon: number): Promise<HourlyData[]> => {
+  console.log(`Fetching hourly forecast for lat: ${lat}, lon: ${lon}`);
+  try {
+    const response = await axios.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`);
+    console.log("Hourly forecast API response:", response.data);
+    
+    if (response.data && response.data.list) {
+      const hourlyData = response.data.list.map((item: any) => ({
+        dt: item.dt,
+        temp: item.main.temp,
+        weather: item.weather,
+        pop: item.pop,
+        wind_speed: item.wind.speed
+      }));
+      console.log("Processed hourly data:", hourlyData);
+      return hourlyData;
+    } else {
+      console.error("Unexpected API response structure:", response.data);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching hourly forecast:", error);
+    return [];
+  }
+};
+
 export const fetchAirQuality = async (lat: number, lon: number): Promise<number> => {
   const response = await axios.get(`http://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
   return response.data.list[0].main.aqi;
