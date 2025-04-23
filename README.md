@@ -69,20 +69,6 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Project Structure
-
-```
-weatherapp/
-├── app/           # Next.js app directory
-├── components/    # React components
-├── hooks/         # Custom React hooks
-├── lib/          # Utility functions and API clients
-├── pages/        # Additional pages (if any)
-├── types/        # TypeScript type definitions
-├── public/       # Static files
-└── styles/       # Global styles
-```
-
 ## Available Scripts
 
 - `npm run dev` - Runs the development server
@@ -110,4 +96,4 @@ weatherapp/
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.
