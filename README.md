@@ -1,26 +1,59 @@
-# Weather App
+# Weather Forecast Application
 
-This is a Next.js-based weather application that provides real-time weather information, forecasts, and alerts for various locations.
+A modern, responsive weather forecast application built with Next.js, TypeScript, and Tailwind CSS. This application provides real-time weather data, forecasts, and various weather-related metrics using the OpenWeatherMap API.
 
 ## Features
 
-- Current weather display
-- 5-day forecast
-- 24-hour hourly forecast
-- Air quality index
-- UV index
-- Weather alerts
-- City search with autocomplete suggestions
+- Real-time weather data display
+- 5-day weather forecast
+- 24-hour detailed forecast
+- Air quality index monitoring
+- UV index tracking
+- Weather alerts system
+- City search with autocomplete
+- Saved cities management
 - Responsive design
+- Animated weather transitions
+- Multiple location support
 
-## Technologies Used
+## Tech Stack
 
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Framer Motion for animations
-- OpenWeatherMap API for weather data
+- **Frontend Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Animation**: Framer Motion
+- **Icons**: React Icons
+- **HTTP Client**: Axios
+- **Font**: Geist (Variable Font)
+
+## Prerequisites
+
+- Node.js (version 18 or higher)
+- npm, yarn, or pnpm
+- OpenWeatherMap API key
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd weather-app
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+3. Create a `.env` file in the root directory and add your OpenWeatherMap API key:
+```env
+API_KEY=your_openweathermap_api_key
+```
 
 ## Getting Started
 
@@ -46,16 +79,4 @@ Open [http://localhost:3000] with your browser to see the result.
 
 ## Project Structure
 
-- `/app`: Contains the main application pages and layouts
-- `/components`: React components used throughout the application
-- `/lib`: Utility functions and API calls
-- `/types`: TypeScript type definitions
-- `/pages/api`: API routes for server-side operations
-
-## API Integration
-
-The application uses the OpenWeatherMap API to fetch weather data. API calls are managed in the `lib/api.ts` file.
-
-## Styling
-
-The project uses Tailwind CSS for styling, with custom configurations in `tailwind.config.ts`.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
